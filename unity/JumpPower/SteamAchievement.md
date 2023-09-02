@@ -18,6 +18,11 @@
     SteamUserStats.ResetAllStats(true);
     SteamUserStats.StoreStats();
     ```
+5. if want get achievement status.
+    ```C#
+    bool geted ;
+    SteamUserStats.GetAchievement("API名稱",out geted);
+    ```
 
 ## Very thanks
 * [斯穆絲酷兒的巴哈文章](https://home.gamer.com.tw/creationDetail.php?sn=4156394)
