@@ -151,7 +151,116 @@ $[q_0]_( \/ ~)$是Q的參考~的部分而且含有$q_0$
 有限狀態轉少機 $tau =(Q,Σ,δ,q_0,F)$
 - Q是有限狀態集合
 - Σ是有限輸入輸出字母集合
-- δ:$Q times Sigma_epsilon times Sigma_epsilon -> 2^Q$ 是transition函數
+- δ:$Q times Sigma_epsilon times Sigma_epsilon -> 2^Q$ 是transition函數，
+其中$Sigma_epsilon = Sigma union {epsilon}$
+- $q_0$是初始狀態
+- F是接受狀態集合
+
+在轉換不包含 $ epsilon $ 的情況下
+有限狀態轉少機又被稱作長度保留轉少機
+
+轉換關係 $arrow.r.long_tau subset.eq Q times Sigma^* times Sigma^*$ 
+被定義成最小關係需要滿足：
++ $forall q in Q , q arrow.r.long_tau^(epsilon \/ epsilon) q$
++ if $q' in delta(q,a,b)$ then $q arrow.r.long_tau^(a \/ b) q'$
++ if $ q arrow.r.long_tau^(w \/ u) q'$ and $q' arrow.r.long_tau^(a \/ b) q''$ 
+then $q arrow.r.long_tau^(w a \/ u b) q''$
+$a,b in Sigma_epsilon,$
+$w,u in Sigma^*$
+
+子腳本 $tau$ 再沒有作用的情況會被丟掉
+
+給有限狀態轉換機 $tau=(Q,Σ,δ,q_0,F)$
+定義關係 $rho.alt_tau  = {(w,u) in Sigma^* times Sigma^* |
+ exists q in Q_F in F : q_0 arrow.r.long_tau^(w\/u) q_F}$
+
+關係 $rho subset.eq Sigma^* times Sigma^*$ 是正規關係
+iff 存在有限狀態轉少機tau滿足 $rho = rho.alt_tau$
+
+對於集合$L subset.eq Sigma^*$ 和關係 $rho subset.eq Sigma^* times Sigma^*$
+記爲 $rho.alt(L)$ 是 集合${ w in Sigma^* | exists w' in L : (w',w) in rho.alt}$
+
+關係 $rho subset/eq Sigma^* times Sigma^*$ 是正規性保持
+iff $rho.alt(L)$ 是正規的對於所有正規集合$L subset.eq Sigma^*$
+
+Note：不是所有正規性保持的關係都是正規的
+像是 ${(w,w^R) | w in Sigma^*}$, $w^R$是w的reverse, $abs(Sigma)>1$
+
+=== 有限樹自動機和transducers
+
+有限字母集 $Sigma$ 可以排名
+排名function $text("#")$:
+$Sigma arrow.r NN$
+對於每個 $k in NN, Sigma_k subset.eq Sigma$ 是所有標誌有排行k的集合
+
+$Sigma_0$ 的標誌叫做contstants(常數)
+
+$chi$是標誌的可數集合 叫做variables(變數)
+$T_{Sigma}[chi]$ 是所有由 $Sigma$ 和 $chi$集成的術語集
+$T_{Sigma}[phi]$ 標記成 $T_{Sigma}$，他的元素叫做ground terms(基本術語)
+如果每個變數最多在t中出現一次，$T_{Sigma}[chi]$中的術語t叫做線性
+
+一組標籤L上的有限有序樹t是映射t[WIP]
+
+== 正規模型檢查
+=== 基礎想法
+我們在概論中有說過
+基礎想法是考慮系統中的基礎配置 編碼成
+  適合的有限字母表上的words並表示無限但是正規
+這些有限狀態自動機設置的集合
+
+在設置之間的轉換構成給定系統的一步轉換關係
+然後用有限狀態轉少機來編碼
+或是更常見的用正規維持關係表達（像是專門的自動機操作）
+
+在這個部分，我們爲了簡單
+一致的使用單一的轉少機編碼 給定系統的一步轉換關係
+
+再進去技術細節裏之前展示一個簡單地例子
+：線性拓撲程序的參數網路區域認證
+當處裏這個系統時，每個字母在字串裏都代表一個進程的狀態
+字串的長度代表有幾個進程在系統裏
+特別考慮非常簡單的token經過協定
+任意有限數量進程進入線性網路
+每個進程中都沒有token，要等token從左邊進來
+有token的進程會把token傳給右邊的進程
+一開始只有最左邊的進程有token
+
+在協定裏編碼每個進程的狀態
+$Sigma={N,T}$ 足以表達 無token和有token的狀態
+Set I 是可能的初始設置 
+I可以被編碼成自動機 Fig 1(a)
+轉少機$tau$裏的一步轉換關係 Fig 1(b)
+
+一旦有一個轉少機編碼一步轉換關係 $chi$ 
+還有自動機編碼他的初始設置集合I
+就有兩個基礎策略可以使用
+也是可以直接嘗試計算所有可以到達的設置集合$chi^*(I)$ 或是可到達關係$chi^*$
+
+$chi^*(I)$可在重複的目前以到達狀態集合的一步轉換關係$chi$後被維持
+
+這個問題在參數化的上下文和無限狀態系統
+如果用向前固定點計算無限的集合，計算不會停
+
+爲了計算$chi^*(I)$ or $chi^*$ 至少在特別的情況下停止
+需要加速計算
+一次可以就說出敘述無限數字的結果
+
+在例子中 token一步一步移動到右邊
+一步內允許token移動任意距離可以加速定點計算
+用這個加速可以馬上得到達Fig3.a 的固定點，他代表協定中所有可到達設置的集合
+文章中的目標是 在正規模型檢查裏很多不同方法加速定點計算
+3,3會簡單複習這些方法
+
+=== 3.2正規模型檢查認證[WIP]
+
+
+
+
+
+
+
+
 
 
 
